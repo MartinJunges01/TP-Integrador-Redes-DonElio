@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo E - Mockups de UI</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #2E7D32; margin-bottom: 40px; }
+        .mockups-container { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+        
+        /* Estilos del dispositivo móvil */
+        .phone {
+            width: 300px;
+            height: 600px;
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border: 8px solid #333;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header { background: #2E7D32; color: white; padding: 15px; font-weight: bold; text-align: center; }
+        .content { padding: 15px; flex-grow: 1; background: #fafafa; overflow-y: auto; }
+        
+        /* Elementos UI */
+        .card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 4px solid #2E7D32; }
+        .card.disabled { border-left-color: #9E9E9E; opacity: 0.7; }
+        .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #333; }
+        .card p { margin: 5px 0; font-size: 13px; color: #666; }
+        
+        .btn { display: block; width: 100%; text-align: center; background: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold; margin-top: 10px; font-size: 14px; }
+        .btn-outline { background: transparent; border: 1px solid #4CAF50; color: #4CAF50; }
+        
+        .tabs { display: flex; background: #2E7D32; color: white; font-size: 12px; }
+        .tab { flex: 1; text-align: center; padding: 10px 0; border-bottom: 3px solid transparent; }
+        .tab.active { border-bottom-color: #FFC107; font-weight: bold; }
+        
+        .pie-chart { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(#4CAF50 0% 60%, #FFC107 60% 90%, #2196F3 90% 100%); margin: 20px auto; }
+        .legend { font-size: 12px; }
+        .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Anexo E: Mockups del Sistema Don Elio</h1>
+
+    <div class="mockups-container">
+        
+        <!-- Pantalla 1: Dashboard -->
+        <div class="phone">
+            <div class="header">🌾 Don Elio</div>
+            <div class="content">
+                <h3 style="font-size: 14px; color:#555;">Buenas tardes, Martín</h3>
+                
+                <h4 style="margin: 20px 0 10px 0; font-size: 14px;">Campaña Activa</h4>
+                <div class="card">
+                    <h3>Soja 2025/2026</h3>
+                    <p>Inicio: 01/10/2025 • <b>Activa ✅</b></p>
+                    <p>Tareas pendientes: 3</p>
+                </div>
+                
+                <div style="display:flex; justify-content: space-between; align-items:center;">
+                    <h4 style="font-size: 14px;">Mis Campañas</h4>
+                    <span style="color:#2E7D32; font-weight:bold; font-size:12px;">+ Nueva</span>
+                </div>
+                <div class="card disabled">
+                    <h3>Maíz 2024/2025</h3>
+                    <p>FINALIZADA</p>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-around; background:white; padding:10px; border-top:1px solid #eee; font-size:12px; color:#555;">
+                <div>🏠 Inicio</div>
+                <div>📋 Tareas</div>
+                <div>📊 Reportes</div>
+            </div>
+        </div>
+
+        <!-- Pantalla 2: Detalle / Insumos -->
+        <div class="phone">
+            <div class="header">← Soja 2025/2026</div>
+            <div class="tabs">
+                <div class="tab">Info</div>
+                <div class="tab">Tareas</div>
+                <div class="tab active">Insumos</div>
+                <div class="tab">Cosecha</div>
+            </div>
+            <div class="content">
+                <div class="card" style="border-left-color:#FFC107;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <h3>🌱 Soja RR DM 5.9i</h3>
+                        <h3 style="color:#2E7D32;">500 kg</h3>
+                    </div>
+                    <p>Costo estimado: $ 450.000</p>
+                </div>
+                
+                <div class="card" style="border-left-color:#2196F3;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <h3>🧪 Glifosato 48%</h3>
+                        <h3 style="color:#2E7D32;">200 L</h3>
+                    </div>
+                    <p>Costo estimado: $ 180.000</p>
+                </div>
+                
+                <div style="background:#E8F5E9; padding:15px; border-radius:8px; text-align:center; font-weight:bold; color:#2E7D32;">
+                    Total insumos: $ 630.000
+                </div>
+                
+                <div class="btn" style="margin-top:20px;">+ Agregar Insumo</div>
+            </div>
+        </div>
+
+        <!-- Pantalla 3: Reportes -->
+        <div class="phone">
+            <div class="header" style="display:flex; justify-content:space-between;">
+                <span>📊 Reportes</span>
+                <span>[↑ Export]</span>
+            </div>
+            <div class="content">
+                <div style="background:white; padding:10px; border-radius:5px; border:1px solid #ddd; margin-bottom:15px; display:flex; justify-content:space-between;">
+                    <span>Soja 2025/2026</span>
+                    <span>▼</span>
+                </div>
+                
+                <div style="text-align:center; font-size:14px;">
+                    <p>Total cosechado: <b>180 tn</b></p>
+                    <p>Rendimiento por HA: <b>3.2 tn</b></p>
+                </div>
+                
+                <h4 style="text-align:center; color:#555; margin-top:20px;">Destino de Cosechas</h4>
+                <div class="pie-chart"></div>
+                
+                <div class="legend" style="display:flex; justify-content:center; gap:15px;">
+                    <div><span style="background:#4CAF50;"></span>Almacenado</div>
+                    <div><span style="background:#FFC107;"></span>Vendido</div>
+                    <div><span style="background:#2196F3;"></span>Reservado</div>
+                </div>
+                
+                <div class="btn btn-outline" style="margin-top:30px;">Comparar Campañas</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

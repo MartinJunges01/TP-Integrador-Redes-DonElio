@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo D - Diagramas de Red</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; background-color: #f9f9f9; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2E7D32; text-align: center; }
+        h2 { color: #1565C0; margin-top: 40px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        p.desc { text-align: center; color: #666; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anexo D: Diagramas de Red</h1>
+        <p class="desc">Topologías de red para el despliegue del sistema Don Elio.</p>
+        
+        <h2>Escenario A: Cliente Pequeño (Establecimiento Rural)</h2>
+        <div class="mermaid">
+        graph TD
+            Internet((Internet ISP/4G)) <--> Router[Router / Módem<br/>IP: 192.168.1.1]
+            Router <--> Switch[Switch LAN de 8 Puertos]
+            
+            Switch <--> Servidor[PC Servidor de Backup<br/>IP: 192.168.1.10]
+            Switch <--> Tablet[Tablet Android - Capataz<br/>IP: 192.168.1.20]
+            Switch <--> Celular[Smartphone Android - Agrónomo<br/>IP: 192.168.1.21]
+            Switch <--> PCAdmin[PC Administración<br/>IP: 192.168.1.22]
+            
+            style Switch fill:#ECEFF1,stroke:#607D8B,stroke-width:2px
+            style Servidor fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+        </div>
+
+        <h2>Escenario B: Empresa Grande (Arquitectura Cliente-Servidor)</h2>
+        <div class="mermaid">
+        graph TD
+            Internet((Internet)) <--> FW[Firewall / Router Empresarial]
+            FW <--> Core[Switch Core - Capa 3]
+            
+            Core <--> VLAN10[VLAN 10: Administración<br/>192.168.10.x/24]
+            Core <--> VLAN20[VLAN 20: Operaciones<br/>192.168.20.x/24]
+            Core <--> VLAN30[VLAN 30: Acceso Remoto<br/>192.168.30.x/24]
+            
+            VLAN10 --> AppServer[Servidor API REST]
+            VLAN10 --> DBServer[(Servidor MySQL 8.0)]
+            VLAN20 --> Dispositivos[Tablets y Smartphones<br/>App Don Elio]
+            VLAN30 --> VPN[Usuarios VPN Externos]
+            
+            style Core fill:#ECEFF1,stroke:#607D8B,stroke-width:2px
+            style VLAN10 fill:#FFF3E0,stroke:#E65100,stroke-width:2px
+            style VLAN20 fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
+            style VLAN30 fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

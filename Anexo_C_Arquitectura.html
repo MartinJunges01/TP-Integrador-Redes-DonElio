@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo C - Diagrama de Arquitectura</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; background-color: #f9f9f9; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2E7D32; text-align: center; }
+        p.desc { text-align: center; color: #666; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anexo C: Arquitectura del Sistema Don Elio</h1>
+        <p class="desc">Esquema basado en Clean Architecture utilizando Kotlin, Room, Hilt y Jetpack Compose.</p>
+        
+        <div class="mermaid">
+        graph TD
+            subgraph Presentation ["Capa de Presentación (UI)"]
+                UI[Pantallas Jetpack Compose] <-->|StateFlow| VM[ViewModels]
+            end
+            
+            subgraph Domain ["Capa de Dominio (Lógica de Negocio Pura)"]
+                UC[Casos de Uso<br/>CrearCampania, Login, etc.]
+                Model[Modelos de Datos<br/>Campania, Tarea, Usuario]
+                RepoInt[Interfaces de Repositorios]
+                
+                UC --> Model
+                UC --> RepoInt
+            end
+            
+            subgraph Data ["Capa de Datos (Room SQLite)"]
+                RepoImpl[Implementación de Repositorios]
+                DAO[Room DAOs<br/>CampaniaDao, TareaDao]
+                DB[(Base de Datos SQLite)]
+                
+                RepoImpl --> DAO
+                DAO --> DB
+            end
+            
+            VM -->|Invoca| UC
+            RepoImpl -.->|Implementa| RepoInt
+            
+            style Presentation fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px
+            style Domain fill:#E8F5E9,stroke:#43A047,stroke-width:2px
+            style Data fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>
