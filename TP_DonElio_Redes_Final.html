@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabajo Práctico Integrador – Redes y Comunicación</title>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            text-align: justify;
+            color: #333;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 2.5cm;
+            background-color: #fff;
+        }
+        h1, h2, h3 {
+            color: #2c7a3f;
+            text-align: left;
+        }
+        h1 { font-size: 18pt; text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 14pt; margin-bottom: 40px; font-style: italic; color: #555;}
+        .cover-info { text-align: center; margin-top: 50px; margin-bottom: 100px;}
+        .cover-info p { margin: 5px 0; font-size: 12pt; }
+        .page-break { page-break-before: always; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: left;
+            font-size: 10pt;
+        }
+        th {
+            background-color: #2c7a3f;
+            color: white;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;       /* Permite que el texto baje de linea */
+            word-wrap: break-word;       /* Rompe palabras largas si es necesario */
+            font-size: 9.5pt;
+            border-left: 4px solid #2c7a3f;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .screenshot {
+            display: block;
+            max-width: 300px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .img-caption {
+            text-align: center;
+            font-size: 9pt;
+            font-style: italic;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        @media print {
+            body { padding: 0; background-color: transparent; }
+            .page-break { page-break-before: always; }
+            .screenshot { max-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cover Page -->
+    <h1>Trabajo Práctico Integrador<br>Redes y Comunicación</h1>
+    <div class="subtitle">Implementación, red y despliegue del proyecto final</div>
+
+    <div class="cover-info">
+        <p><strong>Materia:</strong> Redes y Comunicación</p>
+        <p><strong>Profesor:</strong> Fernando Rossler</p>
+        <p><strong>Proyecto Final del Grupo:</strong> Sistema de Gestión Agrónoma "Don Elio"</p>
+        <p><strong>Entrega Parcial:</strong> Parte 1 y Parte 2 — 1er Cuatrimestre</p>
+        <p><strong>Fecha de entrega:</strong> 8 de octubre de 2026</p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 1. Introducción -->
+    <h2>1. Introducción</h2>
+    <p>"Don Elio" es un sistema de gestión agrónoma desarrollado como una aplicación nativa para Android, destinado a profesionales del sector agropecuario. La solución resuelve la necesidad concreta de un ingeniero agrónomo o productor rural de centralizar y digitalizar el seguimiento de sus actividades productivas, reemplazando el uso tradicional de planillas físicas y cuadernos de campo.</p>
+    
+    <p><strong>El problema que resuelve:</strong> En la actualidad, los productores agropecuarios gestionan campañas agrícolas que involucran múltiples dimensiones complejas —insumos, cosechas, tareas operativas y observaciones de campo— de manera frecuentemente desorganizada y sin una trazabilidad clara. Don Elio unifica todas estas dimensiones en una sola herramienta, permitiendo analizar el rendimiento económico de cada campaña, gestionar tareas de forma eficiente y tomar decisiones informadas apoyadas en datos precisos.</p>
+    
+    <p><strong>Tipo de organización destinataria:</strong> El sistema está pensado para empresas agropecuarias de pequeña y mediana escala, cooperativas rurales y estudios de ingeniería agronómica que administran múltiples clientes.</p>
+    
+    <p><strong>Alcance de la solución:</strong></p>
+    <ul>
+        <li>Gestión completa del ciclo de vida de campañas agrícolas (creación, seguimiento continuo y cierre).</li>
+        <li>Registro y administración de insumos mediante un catálogo reutilizable, con vinculación directa a cada campaña.</li>
+        <li>Planificación de tareas operativas, incluyendo recordatorios y confirmación de ejecución.</li>
+        <li>Registro detallado de cosechas (discriminando entre lo almacenado y lo vendido/reservado) y cálculo automático de rendimiento.</li>
+        <li>Registro de observaciones de campo con soporte para evidencia fotográfica.</li>
+        <li>Generación de reportes comparativos entre campañas, con opción de exportación a formatos CSV y PDF.</li>
+        <li>Autenticación segura por usuario, implementando hash de contraseñas mediante el algoritmo SHA-256.</li>
+        <li>Mecanismos de backup y restauración de la base de datos local para salvaguardar la información.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <!-- Parte 1 -->
+    <h2>Parte 1: Configuración de la Red e Infraestructura de Implementación</h2>
+    <p>En esta sección se diseña la infraestructura de red necesaria para alojar y poner en funcionamiento el sistema "Don Elio" contemplando distintos escenarios reales. La propuesta abarca la forma en que se implementaría la solución considerando los recursos físicos disponibles, la cantidad de usuarios, los requerimientos de seguridad, las estrategias de mantenimiento y la viabilidad de crecimiento a futuro.</p>
+
+    <h3>1.1. Diseño y Topología de la Red</h3>
+    <p><strong>Elección de topología: Estrella con Switch Central</strong></p>
+    <p>Para implementar Don Elio en un establecimiento agropecuario estándar, se propone una <strong>topología en estrella</strong>. En esta configuración, todos los dispositivos finales se conectan a un switch central que, a su vez, se vincula al router encargado de proveer el acceso a Internet.</p>
+    
+    <p><strong>Justificación técnica para el contexto de Don Elio:</strong></p>
+    <ul>
+        <li><strong>Aislamiento de fallas:</strong> Si un dispositivo (como la tablet del capataz o la PC administrativa) experimenta una falla, el resto de la red no se ve afectado. Esto garantiza que el servidor de backups y reportes siga operativo, algo crítico durante la temporada de cosecha, donde la continuidad del trabajo es prioridad absoluta.</li>
+        <li><strong>Escalabilidad progresiva:</strong> En una etapa inicial, el establecimiento puede operar con tan solo 3 o 4 dispositivos. A medida que el negocio crezca y se incorporen más operarios o nuevos sectores (ej. ganadería o logística), agregar nodos adicionales consistirá simplemente en conectar nuevos cables o puntos de acceso al switch central.</li>
+        <li><strong>Administración centralizada:</strong> El uso de un switch permite monitorear el tráfico de manera eficiente. Si se utiliza un switch administrable, es posible aplicar VLANs para segmentar de forma segura la red entre los usuarios de campo y el área administrativa.</li>
+        <li><strong>Bajo costo de implementación:</strong> El hardware necesario para esta topología (un switch no administrado y un router doméstico o SOHO) es sumamente accesible, adaptándose a las posibilidades económicas de una empresa agropecuaria mediana o pequeña.</li>
+    </ul>
+    <p><em>Limitación y mitigación:</em> El switch central representa un único punto de falla (Single Point of Failure). En un escenario de empresa grande, este riesgo se mitigará implementando redundancia de enlaces y switches en configuración de cascada o apilados.</p>
+
+    <p><strong>Escenario A — Cliente Pequeño (Establecimiento rural, 3–5 usuarios)</strong></p>
+    <p>En este entorno, la aplicación Don Elio corre directamente en los dispositivos Android de los operarios de forma <em>offline-first</em> (priorizando el funcionamiento sin conexión). El "servidor" no procesa lógica compleja; es simplemente una PC o un NUC (computadora de formato pequeño y bajo consumo) que actúa como servidor de archivos para almacenar centralmente los backups de la base de datos SQLite, y como un servidor web liviano para visualizar en el futuro un panel de reportes.</p>
+
+    <div class="mermaid">
+    graph TD
+        Internet((Internet <br> ISP Rural / 4G)) --> Router[Router/Modem <br> 192.168.1.1]
+        Router --> Switch[Switch Central <br> 8 puertos]
+        Switch --> Servidor[PC Servidor LAN <br> Backups & Reportes <br> 192.168.1.10]
+        Switch --> Tablet[Tablet Capataz <br> App Don Elio <br> 192.168.1.20]
+        Switch --> SmartPhone[Smartphone Agrónomo <br> App Don Elio <br> 192.168.1.21]
+        Switch --> PCAdmin[PC Administración <br> Acceso a reportes <br> 192.168.1.22]
+        
+        style Internet fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+        style Router fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+        style Switch fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+        style Servidor fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+        style Tablet fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+        style SmartPhone fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+        style PCAdmin fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    </div>
+
+    <p>La base de datos (Room / SQLite) reside localmente en el dispositivo Android de cada usuario. Los backups se exportan al servidor de archivos de la LAN mediante la funcionalidad ya desarrollada (<code>CrearBackupUseCase</code>). La sincronización entre dispositivos no requiere tiempo real; cada operario trabaja con su copia local en el campo (donde suele no haber señal) y la información se consolida en la oficina mediante la restauración o cruce de backups.</p>
+
+    <p><strong>Escenario B — Empresa Grande (Cooperativa o estudio agronómico, 20+ usuarios)</strong></p>
+    <p>En este escenario, el sistema Don Elio evolucionaría incorporando una <strong>API REST centralizada</strong>. Esta API reemplazaría las bases de datos locales por una base de datos central y compartida alojada en un servidor dedicado. La topología migraría hacia una arquitectura cliente-servidor distribuida, donde la seguridad y el rendimiento se gestionan mediante segmentación por VLANs.</p>
+
+    <div class="mermaid">
+    graph TD
+        Internet((Internet)) --> Firewall[Firewall / Router Empresarial]
+        Firewall --> SwitchCore[Switch Core - Capa 3]
+        
+        SwitchCore --> VLAN10[VLAN 10: Administración]
+        VLAN10 --> ServidorApp[Servidor API REST <br> 192.168.10.10]
+        VLAN10 --> ServidorDB[Servidor MySQL 8.0 <br> 192.168.10.11]
+        
+        SwitchCore --> VLAN20[VLAN 20: Operaciones]
+        VLAN20 --> Tablets[Tablets y Smartphones <br> 192.168.20.x]
+        
+        SwitchCore --> VLAN30[VLAN 30: Acceso Remoto]
+        VLAN30 --> VPN[Endpoint VPN <br> 192.168.30.x]
+        
+        style Internet fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+        style Firewall fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+        style SwitchCore fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+        style VLAN10 fill:#fff8e1,stroke:#ffa000,stroke-width:2px
+        style VLAN20 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+        style VLAN30 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    </div>
+
+    <p><strong>Cambios clave para la adaptación a Empresa Grande:</strong></p>
+    <ul>
+        <li>Separación física del Servidor de Aplicación (API REST) y el Servidor de Base de Datos para evitar bloqueos por carga.</li>
+        <li>Implementación de un balanceador de carga (Load Balancer) mediante Nginx para soportar múltiples instancias de la API y asegurar alta disponibilidad.</li>
+        <li>Configuración de una VPN para permitir el acceso seguro a los agrónomos externos (auditores o asesores) sin necesidad de exponer el servidor principal directamente a Internet.</li>
+        <li>Monitoreo activo de la red y uso de recursos utilizando herramientas de grado corporativo como Zabbix o Grafana.</li>
+    </ul>
+
+    <p><strong>Plan de Direccionamiento IP (Escenario A)</strong></p>
+    <p>Se define un rango de red privada <strong>192.168.1.0/24</strong>. Los dispositivos críticos (como el router y el servidor de backups) cuentan con direcciones IP estáticas para asegurar su disponibilidad permanente. Los dispositivos cliente (tablets, smartphones) obtienen su IP dinámicamente vía DHCP, preferentemente con reserva fijada por dirección MAC.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Dispositivo / Servicio</th>
+                <th>Dirección IP</th>
+                <th>Máscara de Subred</th>
+                <th>Gateway</th>
+                <th>Función en Don Elio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Router / Gateway</td>
+                <td>192.168.1.1</td>
+                <td>255.255.255.0</td>
+                <td>N/A</td>
+                <td>Provisión de salida a Internet y enrutamiento.</td>
+            </tr>
+            <tr>
+                <td>PC Servidor LAN</td>
+                <td>192.168.1.10</td>
+                <td>255.255.255.0</td>
+                <td>192.168.1.1</td>
+                <td>Almacenamiento de archivos <code>.db</code> y hosteo del panel de reportes (Nginx).</td>
+            </tr>
+            <tr>
+                <td>Tablet Capataz (Android)</td>
+                <td>192.168.1.20</td>
+                <td>255.255.255.0</td>
+                <td>192.168.1.1</td>
+                <td>Uso de la App Don Elio para registro de tareas y cosechas en campo.</td>
+            </tr>
+            <tr>
+                <td>Smartphone Agrónomo (Android)</td>
+                <td>192.168.1.21</td>
+                <td>255.255.255.0</td>
+                <td>192.168.1.1</td>
+                <td>Uso de la App Don Elio para visualización integral de reportes.</td>
+            </tr>
+            <tr>
+                <td>PC Administración</td>
+                <td>192.168.1.22</td>
+                <td>255.255.255.0</td>
+                <td>192.168.1.1</td>
+                <td>Equipo de escritorio para la descarga y visualización de exportaciones en CSV/PDF.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><strong>¿Por qué IP estática para el servidor?</strong> Los dispositivos Android generan las copias de seguridad apuntando constantemente a la misma dirección IP compartida en la red local. Si esta dirección variara debido al DHCP, los scripts de sincronización del lado del cliente fallarían. Mantener la IP estática (<code>192.168.1.10</code>) garantiza que los servicios de backup y los reportes estén siempre accesibles sin necesidad de reconfigurar la aplicación en los dispositivos móviles cada día.</p>
+
+    <h3>1.2. Configuración Teórica del Servidor o Entorno de Ejecución</h3>
+    <p><strong>Sistema Operativo: Ubuntu Server 24.04 LTS</strong></p>
+    <p><em>Justificación:</em> Es un sistema operativo gratuito que no implica costos de licencia. Ofrece soporte a largo plazo (LTS) hasta el año 2029, brindando estabilidad sin requerir actualizaciones disruptivas. Posee compatibilidad nativa absoluta con herramientas clave como Node.js, SQLite, MySQL y Nginx. Además, su consumo de recursos es tan bajo que permite ser instalado en hardware modesto de la finca, como una Raspberry Pi 4 o una Mini PC Intel (NUC). (Nota: Para el escenario más básico de cliente pequeño, también sería factible utilizar Windows 10/11 Pro con entornos emulados como XAMPP o Laragon).</p>
+
+    <p><strong>Servidor Web: Nginx</strong></p>
+    <p>En la versión actual de Don Elio (desarrollada como aplicación móvil autónoma), Nginx se encargará de servir de manera ligera y eficiente los paneles y reportes exportados (archivos HTML, PDF, CSV) desde el servidor a las PCs de la oficina. En el futuro escenario de empresa grande, Nginx asumirá además el rol crítico de proxy inverso y balanceador de carga frente a la API REST.</p>
+
+    <pre><code># Instalación conceptual en Ubuntu Server:
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx -y
+sudo systemctl enable nginx
+sudo systemctl start nginx</code></pre>
+
+    <p><strong>Base de Datos: SQLite (local) / MySQL 8.0 (servidor centralizado)</strong></p>
+    <p>Actualmente, el sistema Don Elio implementa <strong>SQLite</strong> a través de <em>Room</em> (el ORM oficial proporcionado por Android Jetpack). En este contexto, no se requiere la instalación de un motor de base de datos independiente en el servidor: la información reside íntegramente en un archivo <code>.db</code> contenido dentro de cada dispositivo móvil. Room gestiona la creación de esquemas, migraciones (actualmente en la versión 5) y relaciones complejas (Claves Foráneas) de forma automática. El archivo <code>.db</code> es el que se exporta y resguarda mediante la funcionalidad de backup.</p>
+    <p>Para la transición al escenario de <strong>empresa grande</strong>, con necesidad de escrituras concurrentes intensivas y mayor volumen de datos históricos, SQLite sería reemplazado íntegramente por <strong>MySQL 8.0</strong>, un gestor relacional robusto diseñado para entornos de red que aporta un manejo superior de transacciones, copias de seguridad en caliente y herramientas avanzadas de administración de usuarios.</p>
+
+    <p><strong>Variables de Entorno y Configuración</strong></p>
+    <p>Al migrar a la API REST, por cuestiones de seguridad, las credenciales jamás deben almacenarse (harcodearse) en el código fuente. Los siguientes parámetros se aislarán utilizando archivos de entorno (ej. <code>.env</code>):</p>
+    <pre><code># Configuracion de la API REST (escenario empresa grande)
+DB_HOST=192.168.1.11
+DB_PORT=3306
+DB_NAME=donelio_produccion
+DB_USER=donelio_app
+DB_PASSWORD=&lt;contrasena_segura&gt;
+JWT_SECRET=&lt;clave_aleatoria_256_bits&gt;
+BACKUP_DIR=/var/backups/donelio</code></pre>
+
+    <p><strong>Diseño de Datos — Entidades Principales de Don Elio</strong></p>
+    <p>A continuación, se detallan las estructuras de las tablas principales, derivadas directamente de la capa persistente (<code>data/local/entity/</code>) del código de la aplicación, modeladas originalmente en Room:</p>
+
+    <pre><code>-- Tabla campanias: Entidad central del sistema
+CREATE TABLE campanias (
+    id_campania INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    fecha INTEGER NOT NULL, -- Timestamp en milisegundos para soporte universal
+    cultivo TEXT NOT NULL,
+    esta_activa INTEGER NOT NULL DEFAULT 1 -- 1=activa, 0=cerrada
+);
+
+-- Tabla insumos: Catálogo de insumos agrícolas predefinidos y personalizables
+CREATE TABLE insumos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    categoria TEXT NOT NULL, -- 'Semilla', 'Fertilizante', 'Herbicida'
+    icono TEXT, -- Referencia en texto al icono Material utilizado en la UI
+    activo INTEGER NOT NULL DEFAULT 1
+);
+
+-- Tabla campania_insumos: Relación N:M entre campañas e insumos, guardando precio histórico
+CREATE TABLE campania_insumos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_campania INTEGER NOT NULL,
+    id_insumo INTEGER NOT NULL,
+    cantidad REAL NOT NULL,
+    precio REAL NOT NULL,
+    FOREIGN KEY (id_campania) REFERENCES campanias(id_campania) ON DELETE CASCADE,
+    FOREIGN KEY (id_insumo) REFERENCES insumos(id) ON DELETE RESTRICT
+);
+-- Nota técnica de seguridad: La restricción ON DELETE RESTRICT en la clave foránea
+-- del insumo previene a nivel de base de datos la eliminación accidental de un 
+-- insumo base del catálogo si este ya se encuentra asociado a una campaña activa.</code></pre>
+
+    <div class="page-break"></div>
+
+    <h3>1.3. Simulación de Pruebas de Conectividad y Funcionamiento</h3>
+    <p>A continuación se detallan las metodologías y comandos que se ejecutarían para verificar la solidez de la red y del sistema en un entorno físico de implementación real.</p>
+
+    <p><strong>Prueba 1 — Ping: Verificación de conectividad entre cliente y servidor</strong></p>
+    <p><em>Propósito:</em> Confirmar a nivel de red (Capa 3 del modelo OSI) que la tablet de un operario de campo o capataz alcanza correctamente el servidor de la red LAN, paso previo indispensable para el envío de backups o consultas al panel.</p>
+    <pre><code>ping 192.168.1.10
+
+# Salida esperada:
+PING 192.168.1.10 56(84) bytes of data.
+64 bytes from 192.168.1.10: icmp_seq=1 ttl=64 time=1.23 ms
+64 bytes from 192.168.1.10: icmp_seq=2 ttl=64 time=0.98 ms
+--- 192.168.1.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss</code></pre>
+    <p><em>Interpretación:</em> Una pérdida de paquetes del 0% y tiempos de respuesta (latencia) inferiores a 5 ms garantizan que la red LAN inalámbrica opera sin interferencias severas y los archivos de respaldo podrán transferirse sin riesgos de corrupción.</p>
+
+    <p><strong>Prueba 2 — Traceroute: Diagnóstico preciso de la ruta de los paquetes</strong></p>
+    <p><em>Propósito:</em> Asegurar que el tráfico de datos en la LAN interna cursa únicamente por el Switch (un solo salto) sin ser enrutado ineficientemente a través de la interfaz WAN del modem/router.</p>
+    <pre><code>traceroute 192.168.1.10
+
+# Salida esperada:
+traceroute to 192.168.1.10, 30 hops max
+ 1  192.168.1.10 (192.168.1.10)  1.230 ms  0.980 ms  1.050 ms</code></pre>
+    <p><em>Interpretación:</em> Un trayecto de un solo salto verifica que los dispositivos pertenecen a la misma subred (máscara /24) y se comunican ágilmente en Capa 2.</p>
+
+    <p><strong>Prueba 3 — Servicio web (Panel de reportes y proxy)</strong></p>
+    <p>Desde la PC de Administración, se verifica la correcta respuesta del servicio Nginx, que alojará temporalmente los extractos de datos generados por la app móvil.</p>
+    <pre><code>curl -I http://192.168.1.10
+# Resultado esperado: HTTP/1.1 200 OK</code></pre>
+
+    <p><strong>Prueba 4 — Base de datos: Integridad del respaldo lógico</strong></p>
+    <p>Dado que en el escenario pequeño la BD es puramente SQLite, la prueba consiste en simular la exportación del archivo <code>.db</code> desde la app móvil al servidor y consultarlo remotamente vía terminal de comandos allí, validando así que el archivo no haya sufrido corrupción en la transmisión.</p>
+    <pre><code>sqlite3 donelio_backup_20251023.db "SELECT COUNT(*) FROM campanias;"
+# Resultado esperado: La cantidad correcta de campañas registradas en el sistema (ej: 4).</code></pre>
+
+    <p><strong>Prueba 5 — Multiusuario y Concurrencia</strong></p>
+    <p>En la arquitectura actual (Escenario A), si el agrónomo y el capataz acceden a la aplicación simultáneamente desde dispositivos diferentes, no surgen problemas de concurrencia de escritura ni bloqueos de filas, ya que cada uno interactúa de forma aislada con su propia instancia local de SQLite. Además, el caso de uso <code>LoginUseCase</code> comprueba y mantiene las credenciales de sesión de forma absolutamente independiente en cada equipo.</p>
+    <p><em>Nota sobre la adaptación:</em> En la futura transición al Escenario B (Empresa Grande), los potenciales conflictos de escritura simultánea (cuando varios operarios intenten descontar un mismo insumo al mismo tiempo) serán delegados y resueltos por el <strong>motor transaccional de MySQL</strong> y las validaciones de bloqueo optimista en la API REST, garantizando la consistencia de los datos unificados.</p>
+
+    <div class="page-break"></div>
+
+    <!-- Parte 2 -->
+    <h2>Parte 2: Desarrollo de la Aplicación — Sistema Don Elio</h2>
+    <p>En esta sección se describe en profundidad la aplicación final desarrollada, exponiendo la arquitectura subyacente, la lógica de sus procesos y las decisiones técnicas implementadas a lo largo de su construcción.</p>
+
+    <h3>Stack Tecnológico y Arquitectura</h3>
+    <p>El sistema "Don Elio" ha sido construido utilizando el siguiente ecosistema de desarrollo moderno en el ecosistema Android:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Capa / Función</th>
+                <th>Tecnología Implementada</th>
+                <th>Justificación del Rol en el Proyecto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Lenguaje</strong></td>
+                <td>Kotlin 2.x</td>
+                <td>Lenguaje oficial y principal recomendado por Google para el desarrollo Android. Elimina NullPointerExceptions y reduce el código redundante.</td>
+            </tr>
+            <tr>
+                <td><strong>Interfaz (UI)</strong></td>
+                <td>Jetpack Compose + Material 3</td>
+                <td>Proporciona un modelo de interfaz de usuario puramente declarativa y reactiva, evitando la verbosidad y fragilidad estructural de los layouts XML clásicos.</td>
+            </tr>
+            <tr>
+                <td><strong>Persistencia (BD)</strong></td>
+                <td>Room (SQLite)</td>
+                <td>La plataforma Android ya incluye SQLite. Room añade seguridad de tipado estricta, comprobación de queries SQL en tiempo de compilación y soporte fluido para migraciones de esquema.</td>
+            </tr>
+            <tr>
+                <td><strong>Inyección de Dependencias</strong></td>
+                <td>Dagger-Hilt 2.x</td>
+                <td>Reduce drásticamente el código boilerplate para la gestión de dependencias y se integra de manera nativa con el ciclo de vida de ViewModels y Navigation Compose.</td>
+            </tr>
+            <tr>
+                <td><strong>Concurrencia</strong></td>
+                <td>Coroutines + Flow</td>
+                <td>Habilitan la ejecución asíncrona de manera legible (sin callbacks). Permiten que la UI reaccione instantáneamente ante modificaciones en la base de datos (patrón observador reactivo).</td>
+            </tr>
+            <tr>
+                <td><strong>Manejo de Tareas</strong></td>
+                <td>WorkManager</td>
+                <td>Gestiona recordatorios de tareas y sincronizaciones diferidas, garantizando su ejecución aun cuando la aplicación se encuentre cerrada o el dispositivo haya sido reiniciado.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Arquitectura del Sistema: Clean Architecture</strong></p>
+    <p>Don Elio implementa estrictamente el patrón <strong>Clean Architecture</strong> (Arquitectura Limpia), promoviendo la máxima separación de responsabilidades y la alta cohesión del código fuente.</p>
+
+    <pre><code>■ CAPA DE PRESENTACIÓN (Presentation)
+  → Contiene las pantallas (Screens) construidas en Jetpack Compose y sus ViewModels asociados.
+  → Responsable únicamente de gestionar la Interfaz de Usuario y observar los cambios de estado (StateFlow).
+
+       ▼ invoca a ▼
+
+■ CAPA DE DOMINIO (Domain)
+  → Contiene los Modelos de Negocio puros y los Casos de Uso (Use Cases).
+  → Totalmente agnóstica de Android (no contiene referencias a Context, Activity ni librerías de terceros).
+  → Concentra la lógica de negocio central (ej. validaciones de negocio en más de 35 Use Cases documentados).
+
+       ▼ implementa interfaces expuestas por ▼
+
+■ CAPA DE DATOS (Data)
+  → Administra el acceso a la Base de Datos mediante Repositorios concretos y DAOs (Data Access Objects).
+  → Contiene la configuración de Room y sus entidades de tabla.
+  → Contiene conversores (Mappers) que traducen entidades de persistencia a modelos del dominio.</code></pre>
+
+    <p><strong>Patrón de Flujo de Datos Unidireccional (UDF):</strong></p>
+    <p>El flujo de la información sigue una única dirección para facilitar el seguimiento de errores, los testeos unitarios y asegurar la predictibilidad del estado:<br>
+    <code>Acción en la UI Screen ➔ Evento procesado en ViewModel ➔ Ejecución de Lógica en el Use Case ➔ Petición a Interfaz del Repositorio ➔ DAO efectúa los cambios en BD SQLite</code>.<br>
+    El retorno se realiza propagando automáticamente la nueva información a través de <code>Flow&lt;Resource&lt;T&gt;&gt;</code>, actualizando la pantalla reactivamente sin intervención manual.</p>
+
+    <div class="page-break"></div>
+
+    <h3>Módulos Principales y Usuarios</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Módulo Principal</th>
+                <th>Responsabilidad Operativa</th>
+                <th>Casos de Uso Clave (Use Cases)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Autenticación</strong></td>
+                <td>Verificación segura de ingreso y mantenimiento del estado de sesión activa.</td>
+                <td><code>LoginUseCase</code>, <code>RegistroUseCase</code></td>
+            </tr>
+            <tr>
+                <td><strong>Campañas</strong></td>
+                <td>Gestión integral del ciclo agrícola, desde su apertura hasta la liquidación final.</td>
+                <td><code>CrearCampaniaUC</code>, <code>FinalizarCampaniaUC</code></td>
+            </tr>
+            <tr>
+                <td><strong>Insumos</strong></td>
+                <td>Mantenimiento del catálogo de agroquímicos base y su vinculación específica con campañas.</td>
+                <td><code>CrearInsumoCatalogoUC</code>, <code>AsignarInsumoACampaniaUC</code></td>
+            </tr>
+            <tr>
+                <td><strong>Tareas</strong></td>
+                <td>Programación, monitoreo y notificación diferida de labores operativas.</td>
+                <td><code>CrearTareaUC</code>, <code>ConfirmarTareaUC</code></td>
+            </tr>
+            <tr>
+                <td><strong>Cosechas</strong></td>
+                <td>Registro de volúmenes de grano extraídos, discriminando ingresos de ventas frente a acopio.</td>
+                <td><code>RegistrarCosechaUC</code>, <code>RegistrarCosechaConVentaUC</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Gestión de Permisos y Roles en Don Elio:</strong></p>
+    <p>Actualmente el sistema cuenta con dos tipos de perfiles de acceso. El <strong>Usuario Registrado</strong> (el agrónomo, propietario o capataz), que ingresa sus credenciales de manera presencial, posee acceso administrativo total a la herramienta offline (permisos CRUD completos para gestionar campañas, inventario de insumos, exportación de balances y backups). Por otro lado, existe un rol de <strong>Usuario Invitado</strong>, habilitado por defecto únicamente en las compilaciones de desarrollo (debug builds) para facilitar el testing, el cual posee un perfil de acceso de sólo lectura sin requerir validación de credenciales.</p>
+    <p>Las contraseñas de los usuarios jamás se persisten en texto plano; estas son sometidas a una función criptográfica de dispersión irreversible (hash SHA-256) antes de ser insertadas en la base de datos, garantizando protección técnica ante intrusiones a nivel de archivo.</p>
+
+    <div class="page-break"></div>
+
+    <h3>Diseño de la Interfaz y Experiencia de Usuario</h3>
+    <p>A continuación se exponen las capturas reales representativas de las pantallas principales del sistema, que evidencian el diseño materializado, reactivo y moderno utilizando los componentes de Jetpack Compose (Material Design 3).</p>
+    
+    <p><strong>Vista 1 — Dashboard / Pantalla Principal:</strong><br>
+    Permite acceder rápidamente a la información más relevante del negocio agrícola de un solo vistazo, destacando la campaña principal actualmente en curso, métricas visuales y accesos rápidos a labores pendientes (Tareas).</p>
+    <img src="file:///F:/Proyectos/Sistema-de-Gestion-Agronomo-Don-Elio/docs/capturas_manual/Dashboard.png" alt="Dashboard de Don Elio" class="screenshot">
+    <div class="img-caption">Figura 1: Dashboard y métricas de bienvenida del sistema nativo.</div>
+
+    <p><strong>Vista 2 — Detalle de Campaña y Navegación:</strong><br>
+    Centraliza exhaustivamente todas las entidades asociadas de una campaña agrícola específica (Insumos, Tareas, Cosechas, Observaciones) a través de un menú de navegación intuitivo de acceso inmediato.</p>
+    <img src="file:///F:/Proyectos/Sistema-de-Gestion-Agronomo-Don-Elio/docs/capturas_manual/Detalle%20Campa%C3%B1a.png" alt="Detalle de Campaña" class="screenshot">
+    <div class="img-caption">Figura 2: Vista integral del estado, configuración y progreso de la campaña agrícola.</div>
+
+    <p><strong>Vista 3 — Pantalla de Reportes Económicos:</strong><br>
+    Brinda herramientas analíticas visuales (gráficos de torta YCharts interactivos) y resúmenes financieros claros sobre los costos incurridos frente al volumen efectivamente producido, con opción de exportación instantánea en formatos PDF y CSV.</p>
+    <img src="file:///F:/Proyectos/Sistema-de-Gestion-Agronomo-Don-Elio/docs/capturas_manual/Reportes%201.png" alt="Pantalla de Reportes" class="screenshot">
+    <div class="img-caption">Figura 3: Análisis estadístico e interpretación económica (Dashboard de Inteligencia de Negocio) de la campaña.</div>
+
+    <div class="page-break"></div>
+
+    <h3>Lógica de la Aplicación y Pseudocódigo Clave</h3>
+    
+    <p><strong>Funcionalidad 1 — Crear Campaña</strong><br>
+    <em>Parámetros recibidos:</em> <code>nombre: String</code>, <code>cultivo: String</code>, <code>fechaInicio: Long</code><br>
+    <em>Retorno:</em> <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code> (Emite progresivamente: Estado de carga, y luego Éxito o Error de negocio)</p>
+    <pre><code>FUNCION crearCampania(nombre, cultivo, fechaInicio)
+  SI el nombre de la campaña está vacío ENTONCES
+      EMITIR Resource.Error("El nombre no puede estar vacío, asigne un identificador")
+      TERMINAR PROCESO
+  FIN SI
+
+  -- Construcción en memoria del objeto de Dominio
+  campania = Campania(
+      id = 0, -- El ORM Room se encarga de asignar el ID Auto-Incremental real
+      nombre = nombre.trim(),
+      cultivo = cultivo.trim(),
+      fechaInicio = fechaInicio,
+      estaActiva = true
+  )
+
+  EMITIR Resource.Loading -- Notifica instantáneamente a la UI que inició un proceso intensivo
+
+  EN HILO DE BACKGROUND (IO Dispatcher seguro):
+      campaniaRepository.insertCampania(campania) -- El DAO ejecuta el comando SQL (INSERT INTO)
+      EMITIR Resource.Success(Unit) -- Notifica conclusión exitosa para cerrar formularios
+FIN FUNCION</code></pre>
+
+    <p><strong>Funcionalidad 2 — Autenticación de Usuario (Login Seguro)</strong><br>
+    <em>Parámetros recibidos:</em> <code>nombreUsuario: String</code>, <code>contrasena: String</code><br>
+    <em>Retorno:</em> <code>Usuario?</code> (Retorna el modelo Usuario validado, o <em>null</em> si las credenciales son incorrectas)</p>
+    <pre><code>FUNCION login(nombreUsuario, contrasena)
+  SI nombreUsuario vacío O contrasena vacía ENTONCES
+      LANZAR Excepción_Ilegal("Ambos campos de acceso son obligatorios")
+  FIN SI
+
+  -- Aplicación estricta de función criptográfica Hash (Algoritmo SHA-256)
+  hashIngresado = SHA256(contrasena.toByteArray(UTF-8))
+  
+  -- Recuperación asíncrona del registro de usuario almacenado
+  usuarioEntity = usuarioDao.getUsuarioByNombre(nombreUsuario.trim())
+
+  SI usuarioEntity es null O el hash almacenado en la DB != hashIngresado ENTONCES
+      DEVOLVER null -- Credenciales rechazadas, se previene el acceso
+  SINO
+      DEVOLVER usuarioEntity.toDomain() -- Autenticación correcta, retorna modelo mapeado
+  FIN SI
+FIN FUNCION</code></pre>
+
+    <p><strong>Manejo de Errores e Integridad Implementado:</strong></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Escenario de Error Potencial y Origen</th>
+                <th>Comportamiento Adaptativo y Respuesta del Sistema UI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Campo obligatorio vacío</strong><br>(Validación a nivel de Casos de Uso del Dominio)</td>
+                <td>El Caso de Uso intercepta la anomalía y emite un <code>Resource.Error</code> con texto descriptivo legible. La vista Jetpack Compose captura este estado e inyecta un texto rojo indicador de error debajo del <code>OutlinedTextField</code> específico afectado.</td>
+            </tr>
+            <tr>
+                <td><strong>Intento de eliminación de un Insumo asociado</strong><br>(Fallo de Integridad a nivel del motor SQLite)</td>
+                <td>El motor de base de datos detecta la violación de integridad referencial estructurada (<code>FOREIGN KEY ON DELETE RESTRICT</code>) y lanza una excepción dura. El ViewModel captura y envuelve este crash previniendo el cierre abrupto, y presenta un <code>Snackbar</code> emergente avisando al operario que no es factible borrar el insumo del catálogo por encontrarse atado a un uso histórico de una campaña.</td>
+            </tr>
+            <tr>
+                <td><strong>Negativa a otorgar permiso de la cámara</strong><br>(Error de acceso a Hardware/Capa OS)</td>
+                <td>La gestión reactiva de estado (<code>EstadoPermisoCamara</code>) detecta la negativa de hardware impuesta por Android. Ante esto, si se torna crítica para observar evidencia en campo, se muestra un diálogo explicativo no invasivo indicando las razones del requerimiento e invitándolo vía botón directo a la pantalla nativa de "Ajustes del Sistema" (Intent Options).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- Aspectos Transversales -->
+    <h2>Aspectos Transversales: Implementación, Escalabilidad y Mantenimiento</h2>
+
+    <p>Además de la ejecución en código, el análisis global de un sistema exige entender cómo interactuará con el tejido operativo y tecnológico de una compañía real a lo largo de los años.</p>
+
+    <p><strong>Instalación y Despliegue Inicial (Cliente Pequeño)</strong></p>
+    <p>Al encontrarnos frente a una aplicación netamente móvil y autónoma, la implantación corporativa en un cliente primario (un agricultor propietario con hasta 5 operarios) se ejecuta directamente en los dispositivos portátiles provistos (hardware corporativo sugerido: Android 8.0, 2 GB a 4 GB RAM, 100 MB de almacenamiento).</p>
+    <ul>
+        <li><strong>Proceso Físico:</strong> Instalación controlada a través del archivo binario <code>app-release.apk</code> activando provisionalmente las "Fuentes Desconocidas" (Side-loading) en el entorno Android, o mediante un canal cerrado corporativo provisto por <em>Google Play Store</em> (Internal Testing).</li>
+        <li><strong>Configuración Cero Operativa:</strong> No se requiere asignar costosos consultores IT para configurar servidores web, firewalls perimetrales, dominios o VPNs para la operatividad de campo básica de la app. Durante la primera apertura local, el ORM <em>Room</em> instancia y materializa la base de datos de manera invisible, permitiendo crear en 20 segundos el primer usuario administrador maestro.</li>
+    </ul>
+
+    <p><strong>Estrategia de Escalabilidad (Implementación en Empresa Grande)</strong></p>
+    <p>Con miras al futuro crecimiento para acoplar las necesidades de un grupo corporativo o cooperativa masiva (20+ usuarios interactuando concurrentemente), la actual arquitectura limitante <em>offline-first</em> presenta importantes cuellos de botella para el intercambio veloz de información estadística de las campañas. Las soluciones planteadas incluyen:</p>
+    <ul>
+        <li><strong>Desacoplamiento Base:</strong> Migración del repositorio de persistencia (Room) hacia una <strong>API REST externa centralizada</strong> (desarrollada idealmente en el framework Spring Boot de Java, o Node.js) acompañada de un motor SQL potente orientado a conexiones masivas (<strong>MySQL 8.0</strong>). En tal circunstancia, la aplicación Android actual prescindiría de Room local y pasaría a interactuar puramente como un "cliente HTTP liviano" delegando todo procesamiento pesado de datos.</li>
+        <li><strong>Autenticación Distribuida:</strong> Transición del sistema de seguridad de aislamiento de sesión interno (verificación de hashes) hacia un estándar corporativo utilizando firmas por <strong>JSON Web Tokens (JWT)</strong>. Esto garantiza la posibilidad de manejar accesos controlados desde oficinas centrales (revocación de cuentas de operarios despedidos, auditorías) y configurar caducidades automáticas (time-to-live) de los logueos en tablets.</li>
+    </ul>
+
+    <p><strong>Backups, Recuperación e Integridad</strong></p>
+    <p>En el presente, la seguridad documental de la información depende de la exportación voluntaria y metódica del archivo central <code>.db</code>. La aplicación contiene funcionalidad específica e integrada (<code>CrearBackupUseCase</code>) para extraer esta unidad de archivo compacta al invocar el marco <em>Storage Access Framework (SAF)</em> del OS, permitiendo derivarlo a un PC de resguardo o pendrive.</p>
+    <p>Al escalar el entorno hacia un servidor, se mitiga el riesgo del "olvido humano" mediante tareas desatendidas de sistema operativo (<em>Cron Jobs</em> en Linux) que efectúen diariamente un copiado profundo a nivel transaccional en la madrugada (<code>mysqldump</code>) y apliquen lógicas de compresión GZIP, borrando archivos históricos superiores a los 30 días para evitar el colapso del volumen de disco y optimizar el almacenamiento.</p>
+    
+    <p><strong>Mantenimiento y Auditoría</strong></p>
+    <p>Como política esencial de mantenimiento preventivo, se integrará el SDK de una plataforma líder en analítica de estabilidad de aplicaciones móviles (ej. <strong>Firebase Crashlytics</strong> o Sentry). Estas herramientas se conectan silenciosamente y, ante cualquier caída inesperada en la tablet del cliente provocada por anomalías físicas (Crash o Exception no capturada), recolectan de inmediato los rastros de la pila de memoria (<em>Stack Trace</em>) y los transmiten a un portal web central al recuperar conectividad de red, permitiendo al equipo de ingeniería diagnosticar y enviar correcciones y parches actualizando el APK en cuestión de horas, sin requerir reportes telefónicos manuales.</p>
+
+    <div class="page-break"></div>
+
+    <!-- Conclusión -->
+    <h2>Conclusión</h2>
+    <p>El desarrollo y fundamentación técnica en red del sistema "Don Elio" demuestra fehacientemente cómo un proyecto final de índole académico se ha concebido y documentado emulando la rigurosidad técnica que demanda un ecosistema de software productivo para el mercado real.</p>
+    
+    <p>A lo largo de este extenso análisis y despliegue operativo, se ha logrado:</p>
+    <ul>
+        <li>Diagramar, proyectar y validar una <strong>infraestructura de conectividad y redes sustentable y escalable</strong>. La transición y planeamiento detallado —partiendo desde una sencilla red en estrella acotada basada en el procesamiento táctico offline y un servidor LAN local pasivo, hacia la proyección de una arquitectura robusta orientada a servicios distribuidos (API REST) segmentada de manera segura por VLANs perimetrales— ratifica la versatilidad de los criterios de implementación adoptados.</li>
+        <li>Revalidar el inmenso rédito técnico obtenido por emplear <strong>arquitecturas de software modernas e invariables</strong>, primordialmente la <em>Arquitectura Limpia (Clean Architecture)</em> en amalgama con estándares directos recomendados por Google (lenguaje Kotlin nativo, UI declarativa en Compose e Inyección sólida con Hilt). La demarcación precisa y explícita de cada responsabilidad algorítmica permite adaptar a futuro, si fuese necesario, toda la capa de Base de Datos sin rescribir y penalizar el core de negocio.</li>
+        <li>Evidenciar de manera estructurada las <strong>rutas y lógicas de validación transaccional</strong> y, fundamentalmente, la absorción predecible y amistosa de los flujos de errores o excepciones informáticas, lo que avala un profundo dominio de la experiencia de interacción de usuario y de los preceptos cardinales del desarrollo Frontend móvil.</li>
+    </ul>
+    
+    <p>El documento final conforma, en síntesis, un plano constructivo y operativo completo. Gracias a las adaptaciones de topologías teóricas y metodológicas expuestas (abarcando desde la asistencia técnica hacia un agricultor simple hasta la centralización en una extensa cooperativa agrónoma regional), queda plenamente constatado cómo la solución "Don Elio" ha sido blindada a nivel respaldo de información, asegurada mediante bases operativas modernas, estabilizada ante infortunios procedimentales y alistada minuciosamente para ser implantada con vigor, y evolucionar armónicamente dentro del complejo mercado agropecuario y tecnológico real.</p>
+
+    <div class="page-break"></div>
+
+    <!-- Bibliografía -->
+    <h2>Bibliografía</h2>
+    <p>Android Developers. (2024). <em>Room persistence library - Guías oficiales de Android</em>. Google Inc. Recuperado de <a href="https://developer.android.com/training/data-storage/room">https://developer.android.com/training/data-storage/room</a></p>
+    <p>Android Developers. (2024). <em>Jetpack Compose documentation y material resources</em>. Google Inc. Recuperado de <a href="https://developer.android.com/jetpack/compose">https://developer.android.com/jetpack/compose</a></p>
+    <p>Android Developers. (2024). <em>Hilt dependency injection reference</em>. Google Inc. Recuperado de <a href="https://developer.android.com/training/dependency-injection/hilt-android">https://developer.android.com/training/dependency-injection/hilt-android</a></p>
+    <p>Android Developers. (2024). <em>WorkManager Overview</em>. Google Inc. Recuperado de <a href="https://developer.android.com/topic/libraries/architecture/workmanager">https://developer.android.com/topic/libraries/architecture/workmanager</a></p>
+    <p>Nginx, Inc. (2024). <em>Nginx official documentation and web server fundamentals</em>. Recuperado de <a href="https://nginx.org/en/docs/">https://nginx.org/en/docs/</a></p>
+    <p>Oracle Corporation. (2024). <em>MySQL 8.0 Reference Manual: High availability and scalability</em>. Recuperado de <a href="https://dev.mysql.com/doc/refman/8.0/en/">https://dev.mysql.com/doc/refman/8.0/en/</a></p>
+    <p>OWASP Foundation. (2024). <em>SQL Injection Prevention Cheat Sheet: Best Security Practices</em>. Recuperado de <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</a></p>
+    <p>OWASP Foundation. (2024). <em>Password Storage Cheat Sheet: Hashing Algorithms</em>. Recuperado de <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html</a></p>
+    <p>Tanenbaum, A. S., & Wetherall, D. J. (2011). <em>Computer Networks (5th ed.)</em>. Pearson Prentice Hall.</p>
+    <p>Ubuntu Community. (2024). <em>UFW - Uncomplicated Firewall Server Documentation</em>. Canonical Ltd. Recuperado de <a href="https://help.ubuntu.com/community/UFW">https://help.ubuntu.com/community/UFW</a></p>
+
+    <div class="page-break"></div>
+
+    <!-- Anexos -->
+    <h2>Anexos</h2>
+    
+    <h3>Anexo A — Diagramas de Red (Topologías)</h3>
+    <p>A continuación se exponen las representaciones gráficas normalizadas para la arquitectura de red y el ruteo de información de los escenarios propuestos.</p>
+    
+    <h4>Escenario de Implementación: Cliente Pequeño (Red en Estrella Local)</h4>
+    <div class="mermaid">
+    graph TD
+        Internet((Internet <br> ISP Rural / Móvil 4G)) --> Router[Router / Modem <br> IP: 192.168.1.1]
+        Router --> Switch[Switch Central <br> Capa 2 - 8 puertos]
+        Switch --> Servidor[PC Servidor LAN <br> Backups y Reportes <br> IP: 192.168.1.10]
+        Switch --> Tablet[Tablet Capataz de Campo <br> App Don Elio Nativa <br> IP: 192.168.1.20]
+        Switch --> SmartPhone[Smartphone Agrónomo <br> App Don Elio Nativa <br> IP: 192.168.1.21]
+        Switch --> PCAdmin[PC Administración Oficina <br> Panel Web <br> IP: 192.168.1.22]
+        
+        style Internet fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+        style Router fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+        style Switch fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+        style Servidor fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+        style Tablet fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+        style SmartPhone fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+        style PCAdmin fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    </div>
+    <div class="img-caption">Figura 4: Topología física y conectividad para un entorno rural pequeño y autónomo.</div>
+
+    <br><br>
+    
+    <h4>Escenario de Implementación: Empresa Grande (Migración a API y Segmentación)</h4>
+    <div class="mermaid">
+    graph TD
+        Internet((Internet)) --> Firewall[Firewall Perimetral / Router Empresarial]
+        Firewall --> SwitchCore[Switch Core Institucional - Capa 3]
+        
+        SwitchCore --> VLAN10[VLAN 10: Back-Office y Administración]
+        VLAN10 --> ServidorApp[Servidor de Aplicaciones API REST <br> IP: 192.168.10.10]
+        VLAN10 --> ServidorDB[Servidor de Datos MySQL 8.0 <br> IP: 192.168.10.11]
+        
+        SwitchCore --> VLAN20[VLAN 20: Sector de Operaciones de Campo]
+        VLAN20 --> Tablets[Tablets de Cosecha <br> Segmento: 192.168.20.x]
+        VLAN20 --> Smartphones[Smartphones de Supervisión <br> Segmento: 192.168.20.x]
+        
+        SwitchCore --> VLAN30[VLAN 30: Túnel Seguro Acceso Remoto]
+        VLAN30 --> VPN[Servicio Endpoint VPN para Auditores <br> Segmento: 192.168.30.x]
+        
+        style Internet fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+        style Firewall fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+        style SwitchCore fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+        style VLAN10 fill:#fff8e1,stroke:#ffa000,stroke-width:2px
+        style VLAN20 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+        style VLAN30 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    </div>
+    <div class="img-caption">Figura 5: Propuesta de evolución a arquitectura Cliente-Servidor corporativa segmentada.</div>
+
+    <h3>Anexo B — Fragmento de Código Fuente Real: Lógica Transaccional (<code>CrearCampaniaUseCase.kt</code>)</h3>
+    <p>Evidencia empírica y extraída de la capa de Dominio pura, escrita formalmente en lenguaje Kotlin. Se denota la implementación de la anotación <code>@Inject</code> requerida por Hilt para la inyección de dependencias automáticas, y el empleo nativo de corrutinas <code>Flow</code> para emitir los estados secuenciales de un modo netamente asíncrono y reactivo a la Interfaz de Usuario.</p>
+    <pre><code>class CrearCampaniaUseCase @Inject constructor(
+    private val campaniaRepository: CampaniaRepository
+) {
+    operator fun invoke(
+        nombre: String, 
+        cultivo: String, 
+        fechaInicio: Long
+    ): Flow&lt;Resource&lt;Unit&gt;&gt; = flow {
+        // Notificación inicial del estado "Procesando" para renderizar indicadores de carga visual (Loaders)
+        emit(Resource.Loading)
+        try {
+            // Regla de Negocio Crítica: Prevención de valores anómalos o registros corruptos
+            if (nombre.isBlank()) {
+                throw IllegalArgumentException("El nombre descriptivo de la campaña no puede estar vacio")
+            }
+            // Mapeo instanciado del modelo transitorio de Dominio previo a la persistencia persistente
+            val campania = Campania(
+                id = 0, // A ser auto-incrementado en memoria por Room
+                nombre = nombre.trim(),
+                fechaInicio = fechaInicio, 
+                estaActiva = true,
+                cultivo = cultivo.trim()
+            )
+            // Delegación y materialización a través del componente Repository subyacente
+            campaniaRepository.insertCampania(campania)
+            
+            // Confirmación exitosa y de conclusión de ciclo para liberar el UseCase en la UI
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            // Abstracción y control centralizado del error general de runtime o IO
+            emit(Resource.Error(e.localizedMessage ?: "Ocurrió un error inesperado al procesar la campaña", e))
+        }
+    }.flowOn(Dispatchers.IO) // Delegación imperativa de operaciones costosas (File/DB) fuera del Main UI Thread
+}</code></pre>
+
+    <h3>Anexo C — Fragmento de Código Fuente Real: Algoritmo Criptográfico (<code>LoginUseCase.kt</code>)</h3>
+    <p>Algoritmo de autenticación demostrando la validación estricta de variables frente a la base de datos (Data Access Object) y la generación procedimental en memoria del Hash criptográfico unívoco y estándar (SHA-256) aplicado in situ previo a cualquier comprobación o exposición a las variables temporales.</p>
+    <pre><code>class LoginUseCase @Inject constructor(
+    private val usuarioDao: UsuarioDao
+) {
+    suspend operator fun invoke(nombreUsuario: String, contrasena: String): Usuario? {
+        // Filtrado primario e inmediato para el rechazo proactivo de credenciales
+        if (nombreUsuario.isBlank()) throw IllegalArgumentException("El identificador de usuario es mandatorio")
+        if (contrasena.isBlank()) throw IllegalArgumentException("La credencial de autenticacion esta vacia")
+        
+        // Conversión criptográfica nativa sin el uso de librerías externas superfluas
+        val hash = hashContrasena(contrasena)
+        
+        // Petición transaccional concurrente y asíncrona hacia el DAO de SQLite
+        val entity = usuarioDao.getUsuarioByNombre(nombreUsuario.trim())
+        
+        // Retorno condicional estricto: la entidad debe existir y la firma Hash de la DB debe ser correlativa
+        return if (entity != null && entity.contrasena == hash)
+            entity.toDomain() else null
+    }
+
+    private fun hashContrasena(contrasena: String): String {
+        // Implementación central del estándar Message Digest SHA-256
+        val digest = MessageDigest.getInstance("SHA-256")
+        val bytes = digest.digest(contrasena.toByteArray(Charsets.UTF_8))
+        // Concatenación optimizada aplicando máscara y formateo hexadecimal uniforme a las cadenas (Byte Array)
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+}</code></pre>
+
+</body>
+</html>
